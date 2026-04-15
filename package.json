@@ -1,0 +1,14 @@
+{
+  "name": "generic-producer-nested-js",
+  "version": "1.0.0",
+  "description": "Kafka Nested Message Format Producer — String, Avro, Protobuf (Node.js)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@kafkajs/confluent-schema-registry": "^3.3.0",
+    "dotenv": "^16.4.5",
+    "kafkajs": "^2.2.4"
+  }
+}
