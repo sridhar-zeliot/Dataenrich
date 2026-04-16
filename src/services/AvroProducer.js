@@ -37,14 +37,21 @@ class AvroProducer {
     this._schemaId = null;
   }
 
-  async _getSchemaId() {
-    if (!this._schemaId) {
-      const meta = await this.registry.getLatestSchemaMetadata(SUBJECT);
-      this._schemaId = meta.id;
-      console.log(`[AvroProducer] Cached schema id=${this._schemaId} for subject "${SUBJECT}" (location ref="${LOCATION_SUBJECT}")`);
+async _getSchemaId() {
+  if (!this._schemaId) {
+    try {
+      this._schemaId = await this.registry.getLatestSchemaId(SUBJECT);
+
+      console.log(
+        `[AvroProducer] Cached schema id=${this._schemaId} for subject "${SUBJECT}"`
+      );
+    } catch (err) {
+      console.error(`[AvroProducer] Failed to fetch schema ID:`, err.message);
+      throw err;
     }
-    return this._schemaId;
   }
+  return this._schemaId;
+}
 
   /**
    * Equivalent of produceCarAvro(Car car) in Java.
