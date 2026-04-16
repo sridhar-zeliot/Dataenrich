@@ -27,16 +27,42 @@ class StringProducer {
    */
   async produceCarString(car) {
     try {
-      const carJson = JSON.stringify(car);
+      // ✅ build clean payload
+      const payload = {
+        carId: String(car.carId),
+        carName: car.carName,
+        speed: Number(car.speed),
+
+        fuelLevel: Number(car.fuelLevel),
+        headlight: Boolean(car.headlight),
+        engineTemp: Number(car.engineTemp),
+
+        location: {
+          latitude: Number(car.location?.latitude),
+          longitude: Number(car.location?.longitude),
+        },
+      };
+
+      const carJson = JSON.stringify(payload);
+
       console.log(`[StringProducer] Producing → ${carJson}`);
 
       const result = await this.producer.send({
-        topic:    TOPIC,
-        messages: [{ key: car.carId, value: carJson }],
+        topic: TOPIC,
+        messages: [
+          {
+            key: String(payload.carId),
+            value: carJson,
+          },
+        ],
       });
 
       const [{ partition, baseOffset }] = result;
-      console.log(`[StringProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`);
+
+      console.log(
+        `[StringProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
+      );
+
     } catch (err) {
       console.error('[StringProducer] Error producing String message:', err.message);
     }
