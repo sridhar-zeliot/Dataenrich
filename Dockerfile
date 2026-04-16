@@ -20,4 +20,4 @@ COPY . .
 # ENV NODE_ENV=production
  
 # Specify the command to run the application
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
