@@ -58,30 +58,41 @@ async _getSchemaId() {
    *
    * @param {import('../models/Car')} car
    */
-  async produceCarAvro(car) {
+ async produceCarAvro(car) {
     try {
       const schemaId = await this._getSchemaId();
 
-      // Nested payload — location is a nested object, matching the Avro schema structure
-      // Equivalent of objectMapper.writeValueAsString(car) → GenericRecord conversion in Java
-      console.log("INPUT CAR:", car);
-      const encodedValue = await this.registry.encode(schemaId, {
-        carId:    car.carId,
-        carName:  car.carName,
-        speed:    car.speed,
-        location: {
-          latitude:  car.location.latitude,
-          longitude: car.location.longitude,
-        },
-      });
+      // 🔥 IMPORTANT FIX → Convert class instance to plain object
+      const payload = JSON.parse(JSON.stringify(car));
 
+      // ✅ Optional validation (recommended)
+      if (!payload.carId) throw new Error("carId is missing");
+      if (!payload.carName) throw new Error("carName is missing");
+      if (payload.location?.latitude == null) throw new Error("latitude missing");
+      if (payload.location?.longitude == null) throw new Error("longitude missing");
+
+      console.log("[AvroProducer] Payload:", payload);
+
+      // ✅ Encode with schema
+      const encodedValue = await this.registry.encode(schemaId, payload);
+
+      // ✅ Send to Kafka
       const result = await this.producer.send({
-        topic:    TOPIC,
-        messages: [{ key: car.carId, value: encodedValue }],
+        topic: TOPIC,
+        messages: [
+          {
+            key: String(payload.carId), // ensure string
+            value: encodedValue,
+          },
+        ],
       });
 
       const [{ partition, baseOffset }] = result;
-      console.log(`[AvroProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`);
+
+      console.log(
+        `[AvroProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
+      );
+
     } catch (err) {
       console.error('[AvroProducer] Error producing Avro message:', err.message);
     }
