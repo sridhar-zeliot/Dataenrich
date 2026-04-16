@@ -22,12 +22,14 @@ class ProducerScheduleService {
    * @param {import('./AvroProducer')}                 avroProducer
    * @param {import('./ProtobufProducer')}             protobufProducer
    * @param {import('./StringProducer')}               stringProducer
+   * @param {import('./ProducerScheduleService')}      jsonProducer
    */
-  constructor(carDataGenerator, avroProducer, protobufProducer, stringProducer) {
+  constructor(carDataGenerator, avroProducer, protobufProducer, stringProducer, jsonProducer) {
     this.carDataGenerator = carDataGenerator;
     this.avroProducer     = avroProducer;
     this.protobufProducer = protobufProducer;
     this.stringProducer   = stringProducer;
+    this.jsonProducer     = jsonProducer;
     this._timer           = null;
   }
 

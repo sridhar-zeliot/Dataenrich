@@ -10,7 +10,7 @@ const ProducerScheduleService        = require('./services/ProducerScheduleServi
 const config                         = require('./config/config');
 
 // Kept available if you want to enable JSON production
-// const JSONProducerService = require('./services/JSONProducerService');
+ const JSONProducerService = require('./services/JSONProducerService');
 
 let producer  = null;
 let scheduler = null;
@@ -27,7 +27,7 @@ async function main() {
   const avroProducer     = new AvroProducer(registry, producer);
   const protobufProducer = new ProtobufProducer(registry, producer);
   const stringProducer   = new StringProducer(producer);
-  // const jsonProducerService = new JSONProducerService(registry, producer);  // disabled like Java
+  const jsonProducerService = new JSONProducerService(registry, producer);  // disabled like Java
 
   // 4. Scheduler — equivalent of @Scheduled(fixedRate = 10000)
   scheduler = new ProducerScheduleService(
@@ -35,6 +35,7 @@ async function main() {
     avroProducer,
     protobufProducer,
     stringProducer,
+    jsonProducerService,
   );
   scheduler.start();
 }

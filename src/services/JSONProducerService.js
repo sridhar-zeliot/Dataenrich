@@ -25,14 +25,21 @@ class JSONProducerService {
     this._schemaId = null;
   }
 
-  async _getSchemaId() {
-    if (!this._schemaId) {
-      const meta = await this.registry.getLatestSchemaMetadata(SUBJECT);
-      this._schemaId = meta.id;
-      console.log(`[JSONProducer] Cached schema id=${this._schemaId} for subject "${SUBJECT}"`);
+ async _getSchemaId() {
+  if (!this._schemaId) {
+    try {
+      this._schemaId = await this.registry.getLatestSchemaId(SUBJECT);
+
+      console.log(
+        `[JSONProducer] Cached schema id=${this._schemaId} for subject "${SUBJECT}"`
+      );
+    } catch (err) {
+      console.error('[JSONProducer] Failed to fetch schema ID:', err.message);
+      throw err;
     }
-    return this._schemaId;
   }
+  return this._schemaId;
+}
 
   /**
    * @param {import('../models/Car')} car
@@ -41,25 +48,40 @@ class JSONProducerService {
     try {
       const schemaId = await this._getSchemaId();
 
-      const encodedValue = await this.registry.encode(schemaId, {
-        carId:    car.carId,
-        carName:  car.carName,
-        speed:    car.speed,
+      // ✅ Safer payload (handles full object properly)
+      const payload = {
+        carId: String(car.carId),
+        carName: car.carName,
+        speed: car.speed,
         location: {
-          latitude:  car.location.latitude,
-          longitude: car.location.longitude,
+          latitude: car.location?.latitude,
+          longitude: car.location?.longitude,
         },
-      });
+      };
+
+      const encodedValue = await this.registry.encode(schemaId, payload);
 
       const result = await this.producer.send({
-        topic:    TOPIC,
-        messages: [{ key: car.carId, value: encodedValue }],
+        topic: TOPIC,
+        messages: [
+          {
+            key: String(payload.carId), // ✅ FIX: always string
+            value: encodedValue,
+          },
+        ],
       });
 
       const [{ partition, baseOffset }] = result;
-      console.log(`[JSONProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`);
+
+      console.log(
+        `[JSONProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
+      );
+
     } catch (err) {
-      console.error('[JSONProducer] Error producing JSON message:', err.message);
+      console.error(
+        '[JSONProducer] Error producing JSON message:',
+        err.message
+      );
     }
   }
 }
