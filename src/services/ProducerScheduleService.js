@@ -62,40 +62,36 @@ class ProducerScheduleService {
 
     console.log(`📌 Active Message Format: ${config.messageformat.MESSAGE_FORMAT}`);
 
-try {
-  const format = config.messageformat.MESSAGE_FORMAT.toLowerCase();
+    try {
+      const format = config.messageformat.MESSAGE_FORMAT.toLowerCase();
 
-  switch (format) {
-    case 'avro':
-      console.log('📤 Producing AVRO message...');
-      await this.avroProducer.produceCarAvro(car);
-      break;
+      switch (format) {
+        case 'avro':
+          console.log('Producing AVRO message...');
+          await this.avroProducer.produceCarAvro(car);
+          break;
 
-    case 'protobuf':
-      console.log('📤 Producing PROTOBUF message...');
-      await this.protobufProducer.produceCarProto(car);
-      break;
+        case 'protobuf':
+          console.log('Producing PROTOBUF message...');
+          await this.protobufProducer.produceCarProto(car);
+          break;
 
-    case 'string':
-      console.log('📤 Producing STRING message...');
-      await this.stringProducer.produceCarString(car);
-      break;
+        case 'string':
+          console.log('Producing STRING message...');
+          await this.stringProducer.produceCarString(car);
+          break;
 
-    case 'json':
-      console.log('📤 Producing JSON message...');
-      if (this.jsonProducerService) {
-        await this.jsonProducerService.produceCarJson(car);
-      } else {
-        console.warn('⚠️ JSON Producer not configured');
+        case 'json':
+          console.log('Producing JSON message...');
+          await this.jsonProducerService.produceCarJson(car);
+          break;
+
+        default:
+          console.error(`❌ Invalid MESSAGE_FORMAT: ${format}`);
       }
-      break;
-
-    default:
-      console.error(`❌ Invalid MESSAGE_FORMAT: ${format}`);
-  }
-} catch (err) {
-  console.error('❌ Producer error:', err.message);
-}
+    } catch (err) {
+      console.error('❌ Producer error:', err.message);
+    }
     // Promise.allSettled — each producer handles its own errors internally,
     // so one failure does not cancel the others (same as separate virtual thread submits in Java)
     // await Promise.allSettled([
