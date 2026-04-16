@@ -5,8 +5,8 @@ require('dotenv').config();
 const config = {
   kafka: {
     bootstrapServer:   process.env.KAFKA_BOOTSTRAP_SERVER || 'my-cluster-kafka-bootstrap.kafka:9092',
-    username:          process.env.KAFKA_USERNAME         || '',
-    password:          process.env.KAFKA_PASSWORD         || '',
+    username:          process.env.KAFKA_USERNAME         || 'ewaed6hp3rkggqk477ng4zas1',
+    password:          process.env.KAFKA_PASSWORD         || 'MrSV45FrMCa36Y7',
     clientId:          'car-nested-producer',             // matches Java CLIENT_ID
     retries:           0,
     connectionTimeout: 3000,
@@ -26,19 +26,19 @@ const config = {
 
   // Topic names — match Java constants exactly
   topics: {
-    string:   'test-car-nested-string',
-    avro:     'test-car-nested-avro',
-    protobuf: 'test-car-nested-protobuf',
-    json:     'test-schema-car-json',       // kept but not used in scheduler (commented out in Java too)
+    string:   'car-nested-string-topic',
+    avro:     'car-nested-avro-topic',
+    protobuf: 'car-nested-protobuf-topic',
+    json:     'car-json-topic',       // kept but not used in scheduler (commented out in Java too)
   },
 
   // Subject names used to look up schemas in the registry
   subjects: {
-    avro:             'test-car-nested-avro-value',
+    avro:             'car-nested-avro-topic-value',
     avroLocation:     'test-location-avro',      // SchemaReference in AvroProducer.java
-    protobuf:         'test-car-nested-protobuf-value',
+    protobuf:         'car-nested-protobuf-topic-value',
     protobufLocation: 'location.proto',          // SchemaReference in ProtobufProducer.java
-    json:             'test-schema-car-json-value',
+    json:             'car-json-topic-value',
   },
 };
 
