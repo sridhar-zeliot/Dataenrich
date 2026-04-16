@@ -10,11 +10,14 @@
  *   location — Location  ← nested object (new in this version)
  */
 class Car {
-  constructor(carId, carName, speed, location) {
-    this.carId    = carId;
-    this.carName  = carName;
-    this.speed    = speed;
-    this.location = location;   // instance of Location
+  constructor(carId, carName, speed, fuelLevel, headlight, engineTemp, location) {
+    this.carId = carId;
+    this.carName = carName;
+    this.speed = speed;
+    this.fuelLevel = fuelLevel;       // integer
+    this.headlight = headlight;       // boolean
+    this.engineTemp = engineTemp;     // float/double
+    this.location = location;         // Location object
   }
 }
 

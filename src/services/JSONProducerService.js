@@ -44,46 +44,47 @@ class JSONProducerService {
   /**
    * @param {import('../models/Car')} car
    */
-  async produceCarJson(car) {
-    try {
-      const schemaId = await this._getSchemaId();
+    async produceCarJson(car) {
+      try {
+        const schemaId = await this._getSchemaId();
 
-      // ✅ Safer payload (handles full object properly)
-      const payload = {
-        carId: String(car.carId),
-        carName: car.carName,
-        speed: car.speed,
-        location: {
-          latitude: car.location?.latitude,
-          longitude: car.location?.longitude,
-        },
-      };
+        const payload = {
+          carId: String(car.carId),
+          carName: car.carName,
+          speed: Number(car.speed),
 
-      const encodedValue = await this.registry.encode(schemaId, payload);
+          fuelLevel: Number(car.fuelLevel),
+          headlight: Boolean(car.headlight),
+          engineTemp: Number(car.engineTemp),
 
-      const result = await this.producer.send({
-        topic: TOPIC,
-        messages: [
-          {
-            key: String(payload.carId), // ✅ FIX: always string
-            value: encodedValue,
+          location: {
+            latitude: Number(car.location?.latitude),
+            longitude: Number(car.location?.longitude),
           },
-        ],
-      });
+        };
 
-      const [{ partition, baseOffset }] = result;
+        const encodedValue = await this.registry.encode(schemaId, payload);
 
-      console.log(
-        `[JSONProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
-      );
+        const result = await this.producer.send({
+          topic: TOPIC,
+          messages: [
+            {
+            key: String(payload.carId), // ✅ FIX: always string
+              value: encodedValue,
+            },
+          ],
+        });
 
-    } catch (err) {
-      console.error(
-        '[JSONProducer] Error producing JSON message:',
-        err.message
-      );
+        const [{ partition, baseOffset }] = result;
+
+        console.log(
+          `[JSONProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
+        );
+
+      } catch (err) {
+        console.error('[JSONProducer] Error producing JSON message:', err.message);
+      }
     }
-  }
 }
 
 module.exports = JSONProducerService;

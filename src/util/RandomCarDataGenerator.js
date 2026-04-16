@@ -18,6 +18,9 @@ class RandomCarDataGenerator {
       randomCarId,
       this.carNumber,                              // maps to car.setCarName(carNumberString) in Java
       this._randomSpeed(),
+      this._randomFuelLevel(),
+      this._randomHeadlight(),
+      this._randomEngineTemp(),
       new Location(this._randomLatitude(), this._randomLongitude())  // nested Location
     );
   }
@@ -27,6 +30,17 @@ class RandomCarDataGenerator {
     return num.toString().padStart(2, '0');
   }
   _randomSpeed()     { return Math.random() * 180; }          // 0 – 180 km/h
+  _randomFuelLevel() {
+    return Math.floor(Math.random() * 100); // 0–100
+  }
+
+  _randomHeadlight() {
+    return Math.random() > 0.5; // true/false
+  }
+
+  _randomEngineTemp() {
+    return 70 + Math.random() * 50; // 70–120
+  }
   _randomLatitude()  { return -90  + Math.random() * 180; }   // -90  to  90
   _randomLongitude() { return -180 + Math.random() * 360; }   // -180 to 180
 }
