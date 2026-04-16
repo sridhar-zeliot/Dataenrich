@@ -9,8 +9,8 @@ const Location = require('../models/Location');
  */
 class RandomCarDataGenerator {
   constructor(carId, carNumber) {
-    this.carId     = carId     || 'default-car-id';
-    this.carNumber = carNumber || 'default-car-number';
+    this.carId     = carId     || '007';
+    this.carNumber = carNumber || 'KA07JB007';
   }
 
   generateRandomCar() {

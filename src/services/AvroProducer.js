@@ -64,6 +64,7 @@ async _getSchemaId() {
 
       // Nested payload — location is a nested object, matching the Avro schema structure
       // Equivalent of objectMapper.writeValueAsString(car) → GenericRecord conversion in Java
+      console.log("INPUT CAR:", car);
       const encodedValue = await this.registry.encode(schemaId, {
         carId:    car.carId,
         carName:  car.carName,
