@@ -65,33 +65,49 @@ async _getSchemaId() {
    * @param {import('../models/Car')} car
    */
   async produceCarProto(car) {
-    try {
-      const schemaId = await this._getSchemaId();
+      try {
+        const schemaId = await this._getSchemaId();
 
-      // Nested payload — field names must match the proto message field names exactly
-      // Equivalent of objectMapper.writeValueAsString(car) in Java (used by JsonFormat.parser)
-      const encodedValue = await this.registry.encode(schemaId, {
-        carId:    car.carId,
-        carName:  car.carName,
-        speed:    car.speed,
-        location: {
-          latitude:  car.location.latitude,
-          longitude: car.location.longitude,
-        },
-      });
-          console.log("[AvroProducer] Payload:", encodedValue);
+        // ✅ UPDATED PAYLOAD (matches new schema)
+        const payload = {
+          carId: String(car.carId),
+          carName: car.carName,
+          speed: Number(car.speed),
 
-      const result = await this.producer.send({
-        topic:    TOPIC,
-        messages: [{ key: car.carId, value: encodedValue }],
-      });
+          fuelLevel: Number(car.fuelLevel),
+          headlight: Boolean(car.headlight),
+          engineTemp: Number(car.engineTemp),
 
-      const [{ partition, baseOffset }] = result;
-      console.log(`[ProtobufProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`);
-    } catch (err) {
-      console.error('[ProtobufProducer] Error producing Protobuf message:', err.message);
+          location: {
+            latitude: Number(car.location?.latitude),
+            longitude: Number(car.location?.longitude),
+          },
+        };
+
+        console.log("[ProtobufProducer] Payload:", payload);
+
+        const encodedValue = await this.registry.encode(schemaId, payload);
+
+        const result = await this.producer.send({
+          topic: TOPIC,
+          messages: [
+            {
+              key: String(payload.carId),
+              value: encodedValue,
+            },
+          ],
+        });
+
+        const [{ partition, baseOffset }] = result;
+
+        console.log(
+          `[ProtobufProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
+        );
+
+      } catch (err) {
+        console.error('[ProtobufProducer] Error producing Protobuf message:', err.message);
+      }
     }
-  }
 }
 
 module.exports = ProtobufProducer;
