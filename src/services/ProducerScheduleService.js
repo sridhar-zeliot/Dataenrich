@@ -22,7 +22,7 @@ class ProducerScheduleService {
    * @param {import('./AvroProducer')}                 avroProducer
    * @param {import('./ProtobufProducer')}             protobufProducer
    * @param {import('./StringProducer')}               stringProducer
-   * @param {import('./ProducerScheduleService')}      jsonProducer
+   * @param {import('./JSONProducerService')}          jsonProducer
    */
   constructor(carDataGenerator, avroProducer, protobufProducer, stringProducer, jsonProducer) {
     this.carDataGenerator = carDataGenerator;
@@ -83,7 +83,7 @@ class ProducerScheduleService {
 
         case 'json':
           console.log('Producing JSON message...');
-          await this.jsonProducerService.produceCarJson(car);
+          await this.jsonProducer.produceCarJson(car);
           break;
 
         default:
