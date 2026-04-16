@@ -58,29 +58,36 @@ async _getSchemaId() {
    *
    * @param {import('../models/Car')} car
    */
- async produceCarAvro(car) {
+  async produceCarAvro(car) {
     try {
       const schemaId = await this._getSchemaId();
 
-      // 🔥 IMPORTANT FIX → Convert class instance to plain object
-      const payload = JSON.parse(JSON.stringify(car));
+      // ✅ CLEAN + SAFE PAYLOAD (matches Avro schema exactly)
+      const payload = {
+        carId: String(car.carId),
+        carName: car.carName,
+        speed: Number(car.speed),
 
-      // ✅ Optional validation (recommended)
-      if (!payload.carId) throw new Error("carId is missing");
-      if (!payload.carName) throw new Error("carName is missing");
-      if (payload.location?.latitude == null) throw new Error("latitude missing");
-      if (payload.location?.longitude == null) throw new Error("longitude missing");
+        fuelLevel: Number(car.fuelLevel),
+        headlight: Boolean(car.headlight),
+        engineTemp: Number(car.engineTemp),
 
+        location: {
+          latitude: Number(car.location?.latitude),
+          longitude: Number(car.location?.longitude),
+        },
+      };
 
-      // ✅ Encode with schema
+      // 🔍 debug (important for schema issues)
+      console.log("[AvroProducer] Payload:", payload);
+
       const encodedValue = await this.registry.encode(schemaId, payload);
 
-      // ✅ Send to Kafka
       const result = await this.producer.send({
         topic: TOPIC,
         messages: [
           {
-            key: String(payload.carId), // ensure string
+            key: String(payload.carId),
             value: encodedValue,
           },
         ],
