@@ -23,7 +23,7 @@ async function main() {
   producer = await createProducer();
 
   // 3. Wire up services (equivalent of Spring @Service bean injection)
-  const carDataGenerator = new RandomCarDataGenerator(config.car.id, config.car.number);
+  const carDataGenerator = new RandomCarDataGenerator( config.car.number);
   const avroProducer     = new AvroProducer(registry, producer);
   const protobufProducer = new ProtobufProducer(registry, producer);
   const stringProducer   = new StringProducer(producer);
