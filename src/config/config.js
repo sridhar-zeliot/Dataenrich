@@ -24,6 +24,9 @@ const config = {
     intervalMs: parseInt(process.env.SCHEDULE_INTERVAL_MS || '10000', 10),
   },
 
+messageformat: {
+  MESSAGE_FORMAT: process.env.MESSAGE_FORMAT || 'string'
+},
   // Topic names — match Java constants exactly
   topics: {
     string:   'car-nested-string-topic',
