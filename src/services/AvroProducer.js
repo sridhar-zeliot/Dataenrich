@@ -71,7 +71,6 @@ async _getSchemaId() {
       if (payload.location?.latitude == null) throw new Error("latitude missing");
       if (payload.location?.longitude == null) throw new Error("longitude missing");
 
-      console.log("[AvroProducer] Payload:", payload);
 
       // ✅ Encode with schema
       const encodedValue = await this.registry.encode(schemaId, payload);

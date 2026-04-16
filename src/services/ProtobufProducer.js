@@ -36,14 +36,21 @@ class ProtobufProducer {
     this._schemaId = null;
   }
 
-  async _getSchemaId() {
-    if (!this._schemaId) {
-      const meta = await this.registry.getLatestSchemaMetadata(SUBJECT);
-      this._schemaId = meta.id;
-      console.log(`[ProtobufProducer] Cached schema id=${this._schemaId} for subject "${SUBJECT}" (location ref="${LOCATION_SUBJECT}")`);
+async _getSchemaId() {
+  if (!this._schemaId) {
+    try {
+      this._schemaId = await this.registry.getLatestSchemaId(SUBJECT);
+
+      console.log(
+        `[ProtobufProducer] Cached schema id=${this._schemaId} for subject "${SUBJECT}"`
+      );
+    } catch (err) {
+      console.error('[ProtobufProducer] Failed to fetch schema ID:', err.message);
+      throw err;
     }
-    return this._schemaId;
   }
+  return this._schemaId;
+}
 
   /**
    * Equivalent of produceCarProto(Car car) in Java.
@@ -72,6 +79,7 @@ class ProtobufProducer {
           longitude: car.location.longitude,
         },
       });
+          console.log("[AvroProducer] Payload:", encodedValue);
 
       const result = await this.producer.send({
         topic:    TOPIC,
