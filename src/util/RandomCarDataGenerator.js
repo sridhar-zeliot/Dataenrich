@@ -13,23 +13,13 @@ if (CAR_ID_MIN > CAR_ID_MAX) {
   throw new Error('CAR_ID_MIN cannot be greater than CAR_ID_MAX');
 }
 
-/**
- * Equivalent of RandomCarDataGenerator.java.
- */
 class RandomCarDataGenerator {
-  constructor() {
-    this.carMap = new Map(); // ✅ store carId → carNumber
-  }
 
   generateRandomCar() {
     const randomCarId = this._randomCarId();
 
-    // ✅ check if already exists
-    if (!this.carMap.has(randomCarId)) {
-      this.carMap.set(randomCarId, this._generateCarNumber());
-    }
-
-    const carNumber = this.carMap.get(randomCarId);
+    // ✅ deterministic carNumber (NO Map, NO randomness)
+    const carNumber = this._generateCarNumber(randomCarId);
 
     return new Car(
       randomCarId,
@@ -42,23 +32,27 @@ class RandomCarDataGenerator {
     );
   }
 
-  // ✅ Random Car Number Generator
-  _generateCarNumber() {
+  // ✅ FIXED car number (same for same carId ALWAYS)
+  _generateCarNumber(carId) {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numId = parseInt(carId, 10);
 
     const state = 'KA';
-    const rto = Math.floor(10 + Math.random() * 90); // 10–99
 
-    const series =
-      letters[Math.floor(Math.random() * 26)] +
-      letters[Math.floor(Math.random() * 26)];
+    // deterministic RTO
+    const rto = (10 + (numId % 90)).toString().padStart(2, '0');
 
-    const number = Math.floor(1000 + Math.random() * 9000); // 1000–9999
+    // deterministic letters
+    const first = letters[numId % 26];
+    const second = letters[(numId * 3) % 26];
 
-    return `${state}${rto}${series}${number}`;
+    // deterministic number
+    const number = (1000 + (numId * 137) % 9000);
+
+    return `${state}${rto}${first}${second}${number}`;
   }
 
-  // ✅ Random carId with env range + padding
+  // ✅ Random carId (same as before)
   _randomCarId() {
     const num = Math.floor(Math.random() * (CAR_ID_MAX - CAR_ID_MIN + 1)) + CAR_ID_MIN;
     return num.toString().padStart(2, '0');
