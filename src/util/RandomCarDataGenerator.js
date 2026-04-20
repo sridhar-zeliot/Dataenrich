@@ -18,14 +18,17 @@ if (CAR_ID_MIN > CAR_ID_MAX) {
  */
 class RandomCarDataGenerator {
   constructor() {
-    this.carNumber = this._generateCarNumber(); // ✅ ALWAYS RANDOM
+
   }
 
   generateRandomCar() {
     const randomCarId = this._randomCarId();
+
+    const carNumber = this._generateCarNumber(); // ✅ NEW every time
+
     return new Car(
       randomCarId,
-      this.carNumber,
+      carNumber,
       this._randomSpeed(),
       this._randomFuelLevel(),
       this._randomHeadlight(),
