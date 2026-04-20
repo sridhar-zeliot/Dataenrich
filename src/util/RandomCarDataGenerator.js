@@ -16,13 +16,13 @@ if (CAR_ID_MIN > CAR_ID_MAX) {
 class RandomCarDataGenerator {
 
   generateRandomCar() {
-    const randomCarId = this._randomCarId();
+    const carId = this._randomCarId();
 
-    // ✅ deterministic carNumber (NO Map, NO randomness)
-    const carNumber = this._generateCarNumber(randomCarId);
+    // ✅ FIXED: deterministic carNumber based on carId
+    const carNumber = this._generateCarNumber(carId);
 
     return new Car(
-      randomCarId,
+      carId,
       carNumber,
       this._randomSpeed(),
       this._randomFuelLevel(),
@@ -32,30 +32,24 @@ class RandomCarDataGenerator {
     );
   }
 
-  // ✅ FIXED car number (same for same carId ALWAYS)
+  // ✅ FIXED carNumber logic (same input → same output always)
   _generateCarNumber(carId) {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const numId = parseInt(carId, 10);
+    const num = Number(carId);
 
-    const state = 'KA';
+    const prefix = 'KA07JB';
 
-    // deterministic RTO
-    const rto = (10 + (numId % 90)).toString().padStart(2, '0');
+    // always padded to 3 digits
+    const suffix = String(num).padStart(3, '0');
 
-    // deterministic letters
-    const first = letters[numId % 26];
-    const second = letters[(numId * 3) % 26];
-
-    // deterministic number
-    const number = (1000 + (numId * 137) % 9000);
-
-    return `${state}${rto}${first}${second}${number}`;
+    return `${prefix}${suffix}`;
   }
 
-  // ✅ Random carId (same as before)
+  // ✅ random carId based on range
   _randomCarId() {
-    const num = Math.floor(Math.random() * (CAR_ID_MAX - CAR_ID_MIN + 1)) + CAR_ID_MIN;
-    return num.toString().padStart(2, '0');
+    const num =
+      Math.floor(Math.random() * (CAR_ID_MAX - CAR_ID_MIN + 1)) + CAR_ID_MIN;
+
+    return String(num).padStart(2, '0');
   }
 
   _randomSpeed() {
