@@ -23,6 +23,10 @@ const config = {
   scheduler: {
     intervalMs: parseInt(process.env.SCHEDULE_INTERVAL_MS || '10000', 10),
   },
+  carRange: {
+    min: parseInt(process.env.CAR_ID_MIN, 10) || 1,
+    max: parseInt(process.env.CAR_ID_MAX, 10) || 15,
+  },
 
 messageformat: {
   MESSAGE_FORMAT: process.env.MESSAGE_FORMAT || 'string'

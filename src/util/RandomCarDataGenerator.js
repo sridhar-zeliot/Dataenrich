@@ -2,10 +2,11 @@
 
 const Car      = require('../models/Car');
 const Location = require('../models/Location');
+const config = require('../config/config');
 
 // ✅ ENV config (keep outside class)
-const CAR_ID_MIN = parseInt(process.env.CAR_ID_MIN, 10) || 1;
-const CAR_ID_MAX = parseInt(process.env.CAR_ID_MAX, 10) || 15;
+const CAR_ID_MIN = config.carRange.min;
+const CAR_ID_MAX = config.carRange.max;
 
 // ✅ Validation
 if (CAR_ID_MIN > CAR_ID_MAX) {
