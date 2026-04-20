@@ -18,13 +18,18 @@ if (CAR_ID_MIN > CAR_ID_MAX) {
  */
 class RandomCarDataGenerator {
   constructor() {
-
+    this.carMap = new Map(); // ✅ store carId → carNumber
   }
 
   generateRandomCar() {
     const randomCarId = this._randomCarId();
 
-    const carNumber = this._generateCarNumber(); // ✅ NEW every time
+    // ✅ check if already exists
+    if (!this.carMap.has(randomCarId)) {
+      this.carMap.set(randomCarId, this._generateCarNumber());
+    }
+
+    const carNumber = this.carMap.get(randomCarId);
 
     return new Car(
       randomCarId,
