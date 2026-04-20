@@ -3,9 +3,17 @@
 const Car      = require('../models/Car');
 const Location = require('../models/Location');
 
+// ✅ ENV config (keep outside class)
+const CAR_ID_MIN = parseInt(process.env.CAR_ID_MIN, 10) || 1;
+const CAR_ID_MAX = parseInt(process.env.CAR_ID_MAX, 10) || 15;
+
+// ✅ Validation
+if (CAR_ID_MIN > CAR_ID_MAX) {
+  throw new Error('CAR_ID_MIN cannot be greater than CAR_ID_MAX');
+}
+
 /**
  * Equivalent of RandomCarDataGenerator.java.
- * Generates a Car with a nested Location object (new in this version).
  */
 class RandomCarDataGenerator {
   constructor(carNumber) {
@@ -16,33 +24,44 @@ class RandomCarDataGenerator {
     const randomCarId = this._randomCarId();
     return new Car(
       randomCarId,
-      this.carNumber,                              // maps to car.setCarName(carNumberString) in Java
+      this.carNumber,
       this._randomSpeed(),
       this._randomFuelLevel(),
       this._randomHeadlight(),
       this._randomEngineTemp(),
-      new Location(this._randomLatitude(), this._randomLongitude())  // nested Location
+      new Location(this._randomLatitude(), this._randomLongitude())
     );
   }
 
-   _randomCarId() {
-    const num = Math.floor(Math.random() * 15) + 1;
+  // ✅ Random carId with env range + padding
+  _randomCarId() {
+    const num = Math.floor(Math.random() * (CAR_ID_MAX - CAR_ID_MIN + 1)) + CAR_ID_MIN;
     return num.toString().padStart(2, '0');
   }
-  _randomSpeed()     { return Math.random() * 180; }          // 0 – 180 km/h
+
+  _randomSpeed() {
+    return Math.random() * 180;
+  }
+
   _randomFuelLevel() {
-    return Math.floor(Math.random() * 100); // 0–100
+    return Math.floor(Math.random() * 100);
   }
 
   _randomHeadlight() {
-    return Math.random() > 0.5; // true/false
+    return Math.random() > 0.5;
   }
 
   _randomEngineTemp() {
-    return 70 + Math.random() * 50; // 70–120
+    return 70 + Math.random() * 50;
   }
-  _randomLatitude()  { return -90  + Math.random() * 180; }   // -90  to  90
-  _randomLongitude() { return -180 + Math.random() * 360; }   // -180 to 180
+
+  _randomLatitude() {
+    return -90 + Math.random() * 180;
+  }
+
+  _randomLongitude() {
+    return -180 + Math.random() * 360;
+  }
 }
 
 module.exports = RandomCarDataGenerator;
