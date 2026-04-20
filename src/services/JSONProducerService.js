@@ -33,6 +33,7 @@ class JSONProducerService {
       console.log(
         `[JSONProducer] Cached schema id=${this._schemaId} for subject "${SUBJECT}"`
       );
+        console.log('===================================================\n');
     } catch (err) {
       console.error('[JSONProducer] Failed to fetch schema ID:', err.message);
       throw err;
@@ -76,6 +77,19 @@ class JSONProducerService {
         });
 
         const [{ partition, baseOffset }] = result;
+
+        const time = new Date().toISOString();
+
+    console.log('\n================ CAR DATA PUBLISHED ================');
+    console.log(`Timestamp     : ${time}`);
+    console.log(`Car ID        : ${payload.carId}`);
+    console.log(`Car Name      : ${payload.carName}`);
+    console.log(`Speed         : ${payload.speed}`);
+    console.log(`Fuel Level    : ${payload.fuelLevel}`);
+    console.log(`Engine Temp   : ${payload.engineTemp}`);
+    console.log(`Latitude      : ${payload.location.latitude}`);
+    console.log(`Longitude     : ${payload.location.longitude}`);
+    console.log('===================================================\n');
 
         console.log(
           `[JSONProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
