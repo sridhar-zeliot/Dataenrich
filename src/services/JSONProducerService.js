@@ -45,7 +45,7 @@ class JSONProducerService {
   /**
    * @param {import('../models/Car')} car
    */
-    async produceCarJson(car) {
+      async produceCarJson(car, headers = {}) {
       try {
         const schemaId = await this._getSchemaId();
 
@@ -64,15 +64,22 @@ class JSONProducerService {
           },
         };
 
-        const encodedValue = await this.registry.encode(schemaId, payload);
+       const encodedValue = await this.registry.encode(schemaId, payload);
+
+        // ✅ Convert headers → Buffer
+        const kafkaHeaders = {};
+          for (const key in headers) {
+            kafkaHeaders[key] = Buffer.from(String(headers[key]));
+        }
 
         const result = await this.producer.send({
           topic: TOPIC,
           messages: [
-            {
-            key: String(payload.carId), // ✅ FIX: always string
-              value: encodedValue,
-            },
+             {
+                  key: String(payload.carId), // ✅ FIX: always string
+                  value: encodedValue, 
+                  headers: kafkaHeaders  // ✅ add here only
+              },
           ],
         });
 
@@ -98,7 +105,7 @@ class JSONProducerService {
       } catch (err) {
         console.error('[JSONProducer] Error producing JSON message:', err.message);
       }
-    }
+  }
 }
 
 module.exports = JSONProducerService;

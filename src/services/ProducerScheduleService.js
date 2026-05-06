@@ -60,6 +60,13 @@ class ProducerScheduleService {
       ` lat=${car.location.latitude.toFixed(4)} lng=${car.location.longitude.toFixed(4)}`
     );
 
+    const headers = {
+        source: "car-simulator",
+        eventType: "car-data",
+        format: format, // avro / protobuf / string / json
+        version: "v1",
+        timestamp: new Date().toISOString()
+    };
     console.log(`📌 Active Message Format: ${config.messageformat.MESSAGE_FORMAT}`);
 
     try {
@@ -68,22 +75,22 @@ class ProducerScheduleService {
       switch (format) {
         case 'avro':
           console.log('Producing AVRO message...');
-          await this.avroProducer.produceCarAvro(car);
+          await this.avroProducer.produceCarAvro(car, headers);
           break;
 
         case 'protobuf':
           console.log('Producing PROTOBUF message...');
-          await this.protobufProducer.produceCarProto(car);
+          await this.protobufProducer.produceCarProto(car, headers);
           break;
 
         case 'string':
           console.log('Producing STRING message...');
-          await this.stringProducer.produceCarString(car);
+          await this.stringProducer.produceCarString(car, headers);
           break;
 
         case 'json':
           console.log('Producing JSON message...');
-          await this.jsonProducer.produceCarJson(car);
+          await this.jsonProducer.produceCarJson(car, headers);
           break;
 
         default:

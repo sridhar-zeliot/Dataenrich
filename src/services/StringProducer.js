@@ -25,7 +25,7 @@ class StringProducer {
   /**
    * @param {import('../models/Car')} car
    */
-  async produceCarString(car) {
+  async produceCarString(car, headers = {}) {
     try {
       // ✅ build clean payload
       const payload = {
@@ -47,12 +47,19 @@ class StringProducer {
 
       console.log(`[StringProducer] Producing → ${carJson}`);
 
+      // ✅ Convert headers → Buffer
+      const kafkaHeaders = {};
+      for (const key in headers) {
+        kafkaHeaders[key] = Buffer.from(String(headers[key]));
+      }
+
       const result = await this.producer.send({
         topic: TOPIC,
         messages: [
           {
             key: String(payload.carId),
             value: carJson,
+            headers: kafkaHeaders   // ✅ ADDED
           },
         ],
       });

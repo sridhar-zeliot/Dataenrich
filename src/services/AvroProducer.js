@@ -58,7 +58,7 @@ async _getSchemaId() {
    *
    * @param {import('../models/Car')} car
    */
-  async produceCarAvro(car) {
+  async produceCarAvro(car, headers = {}) {
     try {
       const schemaId = await this._getSchemaId();
 
@@ -83,12 +83,21 @@ async _getSchemaId() {
 
       const encodedValue = await this.registry.encode(schemaId, payload);
 
+      // ✅ CONVERT HEADERS → BUFFER
+      const kafkaHeaders = {};
+      for (const key in headers) {
+        kafkaHeaders[key] = Buffer.from(String(headers[key]));
+      }
+
       const result = await this.producer.send({
         topic: TOPIC,
         messages: [
           {
             key: String(payload.carId),
             value: encodedValue,
+
+            // ✅ ADD HEADERS HERE
+            headers: kafkaHeaders
           },
         ],
       });

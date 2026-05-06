@@ -64,50 +64,59 @@ async _getSchemaId() {
    *
    * @param {import('../models/Car')} car
    */
-  async produceCarProto(car) {
-      try {
-        const schemaId = await this._getSchemaId();
+  async produceCarProto(car, headers = {}) {
+    try {
+      const schemaId = await this._getSchemaId();
 
         // ✅ UPDATED PAYLOAD (matches new schema)
-        const payload = {
-          carId: String(car.carId),
-          carName: car.carName,
-          speed: Number(car.speed),
+      const payload = {
+        carId: String(car.carId),
+        carName: car.carName,
+        speed: Number(car.speed),
 
-          fuelLevel: Number(car.fuelLevel),
-          headlight: Boolean(car.headlight),
-          engineTemp: Number(car.engineTemp),
+        fuelLevel: Number(car.fuelLevel),
+        headlight: Boolean(car.headlight),
+        engineTemp: Number(car.engineTemp),
 
-          location: {
-            latitude: Number(car.location?.latitude),
-            longitude: Number(car.location?.longitude),
-          },
-        };
+        location: {
+          latitude: Number(car.location?.latitude),
+          longitude: Number(car.location?.longitude),
+        },
+      };
 
-        console.log("[ProtobufProducer] Payload:", payload);
+      console.log("[ProtobufProducer] Payload:", payload);
 
-        const encodedValue = await this.registry.encode(schemaId, payload);
+      const encodedValue = await this.registry.encode(schemaId, payload);
 
-        const result = await this.producer.send({
-          topic: TOPIC,
-          messages: [
-            {
-              key: String(payload.carId),
-              value: encodedValue,
-            },
-          ],
-        });
-
-        const [{ partition, baseOffset }] = result;
-
-        console.log(
-          `[ProtobufProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
-        );
-
-      } catch (err) {
-        console.error('[ProtobufProducer] Error producing Protobuf message:', err.message);
+      // ✅ CONVERT HEADERS → BUFFER
+      const kafkaHeaders = {};
+      for (const key in headers) {
+        kafkaHeaders[key] = Buffer.from(String(headers[key]));
       }
+
+      const result = await this.producer.send({
+        topic: TOPIC,
+        messages: [
+          {
+            key: String(payload.carId),
+            value: encodedValue,
+
+            // ✅ ADD HEADERS HERE
+            headers: kafkaHeaders
+          },
+        ],
+      });
+
+      const [{ partition, baseOffset }] = result;
+
+      console.log(
+        `[ProtobufProducer] Produced → topic=${TOPIC} partition=${partition} offset=${baseOffset}`
+      );
+
+    } catch (err) {
+      console.error('[ProtobufProducer] Error producing Protobuf message:', err.message);
     }
+}
 }
 
 module.exports = ProtobufProducer;
