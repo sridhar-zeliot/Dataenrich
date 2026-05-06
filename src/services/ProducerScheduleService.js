@@ -60,6 +60,8 @@ class ProducerScheduleService {
       ` lat=${car.location.latitude.toFixed(4)} lng=${car.location.longitude.toFixed(4)}`
     );
 
+    const format = config.messageformat.MESSAGE_FORMAT.toLowerCase();
+    
     const headers = {
         source: "car-simulator",
         eventType: "car-data",
