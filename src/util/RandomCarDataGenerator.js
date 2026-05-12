@@ -49,7 +49,7 @@ class RandomCarDataGenerator {
     const num =
       Math.floor(Math.random() * (CAR_ID_MAX - CAR_ID_MIN + 1)) + CAR_ID_MIN;
 
-    return String(num);
+    return String(num).padStart(2, '0');
   }
 
   _randomSpeed() {
