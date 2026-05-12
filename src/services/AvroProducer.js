@@ -93,7 +93,7 @@ async _getSchemaId() {
         topic: TOPIC,
         messages: [
           {
-            key: String(payload.carId),
+            key: JSON.stringify({ carId: String(payload.carId) }),
             value: encodedValue,
 
             // ✅ ADD HEADERS HERE

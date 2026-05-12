@@ -76,7 +76,7 @@ class JSONProducerService {
           topic: TOPIC,
           messages: [
              {
-                  key: String(payload.carId), // ✅ FIX: always string
+                  key: JSON.stringify({ carId: String(payload.carId) }),
                   value: encodedValue, 
                   headers: kafkaHeaders  // ✅ add here only
               },
