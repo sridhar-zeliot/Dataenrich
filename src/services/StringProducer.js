@@ -57,7 +57,7 @@ class StringProducer {
         topic: TOPIC,
         messages: [
           {
-            key: String(payload.carId),
+            key: JSON.stringify({ carId: String(payload.carId) }),
             value: carJson,
             headers: kafkaHeaders   // ✅ ADDED
           },
