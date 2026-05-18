@@ -54,7 +54,7 @@ class JSONProducerService {
           carName: car.carName,
           speed: Number(car.speed),
 
-          fuelLevel: Number(car.fuelLevel),
+          fuelLevel: parseInt(car.fuelLevel),
           headlight: Boolean(car.headlight),
           engineTemp: Number(car.engineTemp),
 
@@ -76,7 +76,7 @@ class JSONProducerService {
           topic: TOPIC,
           messages: [
              {
-                  key: JSON.stringify({ carId: String(payload.carId) }),
+                  key: JSON.stringify({ carId: payload.carId }),
                   value: encodedValue, 
                   headers: kafkaHeaders  // ✅ add here only
               },
