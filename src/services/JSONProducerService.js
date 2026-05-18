@@ -63,8 +63,12 @@ class JSONProducerService {
             longitude: Number(car.location?.longitude),
           },
         };
+        console.log(payload,"payload");
+        
 
        const encodedValue = await this.registry.encode(schemaId, payload);
+       console.log(encodedValue,"encodedValue");
+       
 
         // ✅ Convert headers → Buffer
         const kafkaHeaders = {};
